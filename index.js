@@ -50,7 +50,7 @@ bot.on('voice', async (ctx) => {
   logger.log(response1.data.result.apple_music);
   await ctx.reply(response1.data.result.artist);
   await ctx.reply(response1.data.result.title);
-  await ctx.replyWithAudio(response1.data.result.apple_music?.previews[0]?.url);
+  await ctx.replyWithAudio(response1.data.result.apple_music.previews[0].url);
 
   // const data = {
   //   url: 'https://audd.tech/example1.mp3',

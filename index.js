@@ -3,14 +3,13 @@ import './misc/env.js';
 import axios from 'axios';
 import SceneGenerator from './scenes.js';
 
-
 const logger = console;
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const {
-  Extra,
-  Markup,
+  // Extra,
+  // Markup,
   Stage,
   session,
 } = Telegraf;
@@ -45,12 +44,16 @@ bot.command('getlyrics', async (ctx) => {
 
 bot.on('voice', async (ctx) => {
   const fileLink = await ctx.telegram.getFileLink(ctx.message.voice.file_id);
-  const response1 = await axios.get(`https://api.audd.io/?url=${fileLink}&return=apple_music,spotify&api_token=${process.env.AUD_TOKEN}`);
-  console.log(response1);
-  logger.log(response1.data.result.apple_music);
-  await ctx.reply(response1.data.result.artist);
-  await ctx.reply(response1.data.result.title);
-  await ctx.replyWithAudio(response1.data.result.apple_music.previews[0].url);
+  try {
+    const response1 = await axios.get(`https://api.audd.io/?url=${fileLink}&return=apple_music,spotify&api_token=${process.env.AUD_TOKEN}`);
+    logger.log(response1);
+    logger.log(response1.data.result.apple_music);
+    await ctx.reply(response1.data.result.artist);
+    await ctx.reply(response1.data.result.title);
+    await ctx.replyWithAudio(response1.data.result.apple_music.previews[0].url);
+  } catch (err) {
+    ctx.reply('Sorry, can\'t find:(');
+  }
 
   // const data = {
   //   url: 'https://audd.tech/example1.mp3',
@@ -65,7 +68,6 @@ bot.on('voice', async (ctx) => {
   // }, (err, res, body) => {
   //   console.log(body);
   // });
-
 });
 
 bot.on('text', async (ctx) => {

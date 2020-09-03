@@ -1,15 +1,27 @@
-import express from 'express';
-import './misc/env.js';
 import Telegraf from 'telegraf';
-import axios from 'axios';
+import './misc/env.js';
+import SceneGenerator from './scenes.js';
 
 const logger = console;
-const app = express();
-
-app.use(express.static('public'));
-app.use(express.json());
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
+
+const {
+  Extra,
+  Markup,
+  Stage,
+  session,
+} = Telegraf;
+
+const curScene = new SceneGenerator();
+
+const artistS = curScene.genArtistScene();
+const songS = curScene.genSongScene();
+
+const stage = new Stage([artistS, songS]);
+
+bot.use(session());
+bot.use(stage.middleware());
 
 bot.use(async (ctx, next) => {
   const start = new Date();
@@ -19,24 +31,22 @@ bot.use(async (ctx, next) => {
 });
 
 bot.start((ctx) => ctx.reply('Welcome'));
-bot.help((ctx) => ctx.reply('Send me a sticker'));
-bot.on('sticker', (ctx) => ctx.reply('👍'));
+
 bot.hears('hi', (ctx) => {
   ctx.reply('Hey there ');
 });
+bot.command('echo', (ctx) => ctx.reply('Echo'));
+bot.command('getlyrics', async (ctx) => {
+  ctx.scene.enter('artistS');
+});
+
 bot.on('text', async (ctx) => {
-  console.log(ctx.message.text);
-  const song = ctx.message.text;
-  const response = await axios.get(`https://api.lyrics.ovh/v1/${song}`);
+  // const song = ctx.message.text;
+  // const response = await axios.get(`https://api.lyrics.ovh/v1/${song}`)
   // Explicit usage
   // ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`);
-
   // Using context shortcut
-  ctx.reply(`${response.data.lyrics}`);
+  ctx.reply(`${ctx.message.text}`);
 });
+bot.on('sticker', (ctx) => ctx.reply('👍'));
 bot.launch();
-
-const port = process.env.PORT ?? 3000;
-app.listen(port, () => {
-  logger.log('Сервер запущен. Порт:', port);
-});

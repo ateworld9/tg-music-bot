@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "node": "14.8.0",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",

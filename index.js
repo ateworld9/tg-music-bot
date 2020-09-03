@@ -35,6 +35,7 @@ bot.start((ctx) => ctx.reply('Welcome'));
 bot.hears('hi', (ctx) => {
   ctx.reply('Hey there ');
 });
+
 bot.command('echo', (ctx) => ctx.reply('Echo'));
 bot.command('getlyrics', async (ctx) => {
   ctx.scene.enter('artistS');
